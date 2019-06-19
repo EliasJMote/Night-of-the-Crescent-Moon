@@ -1,5 +1,5 @@
 ﻿Night of the Crescent Moon
-Version 0.5.0
+Version 0.7.0
 
 Copyright © 2019 Elias Mote
 Copyright © 2019 Roc Studios
@@ -22,7 +22,15 @@ strictly prohibited, and a violation of copyright.
 II. Version History
 
 ------------------------
-V0.5.0 - Current Version
+V0.7.0 - Current Version
+------------------------
+- Added stone statue npc
+- Added a significant amount of descriptions and dialogue
+- Added key terms
+- Updated multiple areas
+
+------------------------
+V0.5.0
 ------------------------
 - Added multiple areas
 - Added Crystal Knight npc

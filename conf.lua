@@ -1,5 +1,5 @@
 function love.conf(t)
-  gameVersion = "0.7.0"
+  gameVersion = "0.9.0"
   local scale = 2
   t.title = "Night of the Crescent Moon Ver " .. gameVersion
   t.version = "11.1"

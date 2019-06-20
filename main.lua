@@ -1,3 +1,12 @@
+-- Disable items not in use
+function disableItems(text)
+    for j in ipairs(items) do
+        if(items[j]["text"] ~= text) then
+            items[j]["enabled"] = false
+        end
+    end
+end
+
 -- Check if this location has a description by walking over it
 function checkWalkableDescription()
     numOfTimesPictureChecked = 0
@@ -60,6 +69,22 @@ function checkSearchableDescription()
                     end
                     writeToTextDisplay(v.des)
                     table.insert(items, {text="Phase Amulet",command="P[h]ase Amulet",enabled=false})
+                elseif(v.item == "Sword Hilt") then
+                    for i in ipairs(items) do
+                        if(v.item == items[i]["text"]) then
+                            return
+                        end
+                    end
+                    writeToTextDisplay(v.des)
+                    table.insert(items, {text="Sword Hilt",command="S[w]ord Hilt",enabled=false})
+                elseif(v.item == "Eye of Truth") then
+                    for i in ipairs(items) do
+                        if(v.item == items[i]["text"]) then
+                            return
+                        end
+                    end
+                    writeToTextDisplay(v.des)
+                    table.insert(items, {text="Eye of Truth",command="[E]ye of Truth",enabled=false})
                 else
                     writeToTextDisplay(v.des)
                     return true
@@ -122,8 +147,8 @@ function love.load()
     state = "title"
     isTalking = false
     isUsingItem = false
-    eyeOfTruthOn = false
     numOfTimesPictureChecked = 0
+    isAskingTheQuestion = false
     
     ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top.png")
     
@@ -132,26 +157,35 @@ function love.load()
     coords = {x=0,y=0}
     keyTerms = {{text="Voice",command="[V]oice",term="Voice"},
                 --{text="Eye of Truth",command="[E]ye of Truth",term="Eye_of_Truth"},
-                --{text="Phase Pendant",command="P[h]ase Pendant",term="Phase_Pendant"},
+                --{text="Phase Amulet",command="P[h]ase Amulet",term="Phase_Amulet"},
                 }
     items = {
                 --{text="Eye of Truth",command="[E]ye of Truth",enabled=false},
-                --{text="Phase Pendant",command="P[h]ase Pendant",enabled=false},
-                --{text="Sword Hilt",command="[S]word Hilt",enabled=false},
+                --{text="Sword Hilt",command="S[w]ord Hilt",enabled=false},
+                --{text="Phase Amulet",command="P[h]ase Amulet",enabled=false},
             }
     
     keyTermMap = {
+                    a="Abandoned_Tower",
                     e="Eye_of_Truth",
                     f="Forest",
-                    h="Phase_Pendant",
+                    g="Forgotten_Pit",
+                    h="Phase_Amulet",
+                    m="Emerald_Sea",
                     o="Lost_Hills",
+                    r="Red_Prince",
+                    t="Stone_Statue",
                     v="Voice",
                     w="Sword_Hilt"
                  }
     
     curTermToLearn = nil
     
+    -- load item images
     lanternImg = {love.graphics.newImage("Lantern_1.png"), love.graphics.newImage("Lantern_2.png")}
+    amuletImg = {love.graphics.newImage("Phase_Amulet_1.png"), love.graphics.newImage("Phase_Amulet_2.png")}
+    eyeOfTruthImg = {love.graphics.newImage("Eye_of_Truth_1.png"), love.graphics.newImage("Eye_of_Truth_2.png")}
+    swordHiltImg = {love.graphics.newImage("Sword_Hilt_1.png"), love.graphics.newImage("Sword_Hilt_2.png")}
     
     -- Game locations and their information
     locations = {
@@ -244,20 +278,27 @@ function love.load()
                                                                     default={
                                                                                 text={"..."},
                                                                             },
+                                                                    Abandoned_Tower={
+                                                                                    text={"THE [RED PRINCE'S] OLD STRONGHOLD. AN ALTAR WAS BUILT ON TOP TO WORSHIP THE GHOST",
+                                                                                        "OF A FAIRE MAIDEN."},
+                                                                                    term={text="Red Prince",command="[R]ed Prince",term="Red_Prince"}
+                                                                                    },
                                                                     Eye_of_Truth={
                                                                                     text={"THE EYE OF TRUTH..............IT SEES............THROUGH ILLUSIONS. THE EYE...............................",
                                                                                         "THE EYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!! THE EYEEEE EEEYEEE THE",
                                                                                         "EEEEYYYYEEEEYEYE",
                                                                                         "",
-                                                                                        "?"}
+                                                                                        "?",
+                                                                                        },
+                                                                                    
                                                                                  },
-                                                                    Forest= {
-                                                                                text={"THE FOREST HIDES A SECRET BURIED IN THE EARTH."},
+                                                                    Emerald_Sea= {
+                                                                                text={"THE EMERALD SEA HIDES SECRETS BURIED IN THE EARTH."},
                                                                             },
                                                                     Lost_Hills= {
                                                                                     text={"DO NOT LOSE YOUR WAY IN THE LOST HILLS, OR YOU WILL NEVER ESCAPE."}
                                                                                 },
-                                                                    Phase_Pendant=  {
+                                                                    Phase_Amulet=  {
                                                                                         text={"A razor thin veil between this world and the next.",
                                                                                               "A cacophony of sound to usher in the forgotten.",
                                                                                               "The impetus of your fate, a voice sweet like the siren sailing across the void.",
@@ -266,12 +307,17 @@ function love.load()
                                                                                               "WHAT ARE YOU RUNNING FROM? WHERE ARE YOU GOING? WHO GOES THERE?"
                                                                                              }
                                                                                     },
+                                                                    Red_Prince= {
+                                                                                    text={"THE RED PRINCE...?...!...? HE SOUGHT THE FISSURES BETWEEN WORLDS USING HIS PRECIOUS",
+                                                                                        "AMULET. HIS ILLUSIONS ARE POWERFUL AND MANY.",
+                                                                                        "A red eye seemingly appears in the corner of your vision momentarily."}
+                                                                                },
                                                                     Sword_Hilt= {
-                                                                                    text={"TRAVERSE THE \"LOST HILLS\" TO FIND THE SWORD HILT."},
+                                                                                    text={"TRAVERSE THE [LOST HILLS] TO FIND THE SWORD HILT."},
                                                                                     term={text="Lost Hills", command="L[o]st Hills", term="Lost_Hills"}
                                                                                 },
                                                                     Voice=  {
-                                                                                text={"THE ASTRAL VOICE SPEAKS. YOU MUST FIND THE \"SWORD HILT\"."},
+                                                                                text={"THE ASTRAL VOICE SPEAKS. YOU MUST FIND THE [SWORD HILT]."},
                                                                                 term={text="Sword Hilt", command="S[w]ord Hilt", term="Sword_Hilt"}
                                                                             }
                                                                 }
@@ -281,21 +327,28 @@ function love.load()
                                         rooms = {{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1},{x=1,y=1},{x=2,y=1},{x=0,y=2},{x=1,y=2},{x=2,y=2},{x=3,y=1},{x=4,y=1}},
                                         mapImage = love.graphics.newImage("Emerald_Sea_Map.png"),
                                         roomImage = love.graphics.newImage("Emerald_Sea.png"),
-                                        searDesc = {{x=0,y=0,conds={},des={"You leave the moonlit sea. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}}},
+                                        searDesc = {
+                                                        {x=0,y=0,conds={},des={"You leave the moonlit sea. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}
+                                                        },
+                                                        {x=0,y=2,conds={},item="Phase Amulet",des={"After some digging effort, you find the phase amulet."}},
+                                                    },
                                         walkDesc =  {
-                                                        {x=0,y=0,des=   {
-                                                                            "You walk out and behold a serene sea that sparkles like turquoises in the moonlight. A lighthouse",
-                                                                            "radiates with a haunting glow from a distance. The gentle lapping of ocean waves can be heard",
-                                                                            "nearby."
-                                                                        }
+                                                        {
+                                                            x=0,
+                                                            y=0,
+                                                            des=    {
+                                                                        "You walk out and behold a serene sea that sparkles like turquoises in the moonlight. A lighthouse",
+                                                                        "radiates with a haunting glow from a distance. The gentle lapping of ocean waves can be heard",
+                                                                        "nearby."
+                                                                    }
                                                         },
                                                         {   x=4,
                                                             y=1,
-                                                            des={
-                                                                    "You approach a stone statue of a woman gazing far off into the distance. She stands there with",
-                                                                    "her arms folded against her chest, as though she is waiting for something. The quality of the",
-                                                                    "craftsmanship is impeccable, almost as if the woman was alive just a few moments before...",
-                                                                },
+                                                            des=    {
+                                                                        "You approach a stone statue of a woman gazing far off into the distance. She stands there with",
+                                                                        "her arms crossed against her chest, as though she is waiting for something. The quality of the",
+                                                                        "craftsmanship is impeccable, almost as if the woman was alive just a few moments before...",
+                                                                    },
                                                             img = love.graphics.newImage("Stone_Statue.png"),
                                                         }
                                                     },
@@ -304,9 +357,47 @@ function love.load()
                                                     y=1,
                                                     dialogue=   {
                                                                     default={
-                                                                                text={"(No response)"},
-                                                                                --term={text="Forest",command="[F]orest"}
+                                                                                text={"(No response)","The gentle waves of the [Emerald Sea] can be heard nearby"},
+                                                                                term={text="Emerald Sea",command="E[m]erald Sea",term="Emerald_Sea"}
                                                                             },
+                                                                    Eye_of_Truth=   {
+                                                                                        text=   {
+                                                                                                    "(You hear a voice in your head)",
+                                                                                                    "The eye of truth can pierce the veil of illusions."
+                                                                                                },
+                                                                                        --term={text="Forest",command="[F]orest"}
+                                                                                    },
+                                                                    Forgotten_Pit=  {
+                                                                                        text=   {
+                                                                                                    "(You hear a voice in your head)",
+                                                                                                    "Search the Forgotten Pit for clues."
+                                                                                                },
+                                                                                    },
+                                                                    Phase_Amulet=   {
+                                                                                        text=   {
+                                                                                                    "(You hear a voice in your head)",
+                                                                                                    "The phase amulet allows one to step through a dimensional gate.",
+                                                                                                    "Do not try to traverse a portal without the amulet..."
+                                                                                                },
+                                                                                    },
+                                                                    Red_Prince= {
+                                                                                    text=   {
+                                                                                                "THE RED PRINCE",
+                                                                                                "THE RED PRINCE",
+                                                                                                "THE RED PRINCE",
+                                                                                                "THE RED PRINCE",
+                                                                                                "HIS POWER IS VAST! HIS ILLUSIONS ARE STRONG!",
+                                                                                                "HE PUPPETS THE PRINCESS! HE PUPPETS THE PRINCESS!",
+                                                                                                "(The statue's head stretches, and the body contorts horribly...)"
+                                                                                            }
+                                                                                },
+                                                                    Sword_Hilt= {
+                                                                                    text=   {
+                                                                                                "(You hear a voice in your head)",
+                                                                                                "The astral blade was once whole. Bring the hilt to the altar if you wish to speak to the",
+                                                                                                "princess who calls your name. The blade will rejoin when its hilt is close"
+                                                                                            },
+                                                                                }
                                                                 }
                                                 }
                                     },
@@ -344,19 +435,72 @@ function love.load()
                                                                                 text={"I am Cassandra, one of the spirits of the \"Forest\"."},
                                                                                 term={text="Forest",command="[F]orest",term="Forest"}
                                                                             },
+                                                                    Abandoned_Tower={
+                                                                                    text={  "The Abandoned Tower...recently, I've heard of thunderstorms that seem to appear out of",
+                                                                                            "nowhere that center on that ancient bastion. Rumors abound of a mad prince who forced his",
+                                                                                            "royal painters to devise all sorts of strange art. There may be a surviving painting or two",
+                                                                                            "somewhere around there. I read an aged record once of astonished servants swearing that",
+                                                                                            "they saw their [red prince] praying in front of the paintings, before stepping through them like",
+                                                                                            "they were gates to other worlds. This is just hearsay, of course."
+                                                                                        },
+                                                                                        term={text="Red Prince",command="[R]ed Prince",term="Red_Prince"}
+                                                                                    },
+                                                                    Emerald_Sea={
+                                                                                    text={"The Emerald Sea is a body of water to the east of here. They say a young woman used to stand",
+                                                                                        "out there every night, following the light of the lighthouse to wait for her husband to return",
+                                                                                        "from the war. She waited there so long that she eventually turned to stone...of course there",
+                                                                                        "are others who claimed to have sculpted the [stone statue] that sits out there themselves as",
+                                                                                        "homage to that story. Who's to say what is truth or fiction?"},
+                                                                                    term={text="Stone Statue",command="S[t]one Statue",term="Stone_Statue"}
+                                                                                },
+                                                                    Eye_of_Truth=   {
+                                                                                        text={"An ancient, powerful relic. Supposedly, it can see the truth amongst illusory magic."}
+                                                                                    },
                                                                     Forest= {
-                                                                                text={"This forest is a haven for those of us who wander the earth untethered by mortality."},
+                                                                                text={"This forest is a haven for those of us who wander the earth untethered by mortality.",
+                                                                                        "The [Forgotten Pit] lies a ways south of here."
+                                                                                    },
+                                                                                    term={text="Forgotten Pit", command="For[g]otten Pit", term="Forgotten_Pit"}
                                                                             },
+                                                                    Forgotten_Pit=  {
+                                                                                    text={"A dumping place for those hated in life. Be careful wandering there, lest you fall into the pit",
+                                                                                        "yourself."
+                                                                                        }
+                                                                                    },
                                                                     Lost_Hills= {
                                                                                     text={  "The Lost Hills is a dangerous land south of here that swallows up innocent travelers. Do not",
-                                                                                            "think to traverse it without knowledge of the land or some kind of magic."
+                                                                                            "think to traverse it without knowledge of the land."
                                                                                          }
                                                                                 },
+                                                                    Red_Prince= {
+                                                                                    text={"The red prince...anyone who knew anything about him is dust as this point. I've only been dead",
+                                                                                            "for twenty years myself. The red prince is probably eons past, a long dead noble. Not much is",
+                                                                                            "known about him really. Books on him seem unsure if he was more man or beast. He was also",
+                                                                                            "obsessed with long dead arts of magic - these days, there are no more magicians left in the",
+                                                                                            "world. He just up and disappeared one evening, but the days up to his disappearance, he could",
+                                                                                            "be heard babbling incoherently to himself and talking to his precious paintings."}
+                                                                                },
+                                                                    Stone_Statue={
+                                                                                    text={  "I've heard of people claiming to hear the voice of the woman whispering to them from the",
+                                                                                            "statue."
+                                                                                         }
+                                                                                 },
                                                                     Sword_Hilt= {text= {"A sword hilt? I once heard a story long ago of a jealous goblin who stole a priceless sword. The",
                                                                                         "sword, angry from being stolen by a lowly wretch, chose instead to split itself in half so that the",
                                                                                         "goblin couldn't use or sell the sword. Maybe the sword blade was picked up by someone?"
                                                                                        }
-                                                                                }
+                                                                                },
+                                                                    Voice=  {
+                                                                                text=   {
+                                                                                            "An ethereal voice...it might be coming from the [Abandoned Tower]. I've heard rumors of a",
+                                                                                            "princess who was held against her will at the top of the tower. Every night, she would sing",
+                                                                                            "about her woes to the night sky, hoping someone would come to her rescue. When someone",
+                                                                                            "finally heard her voice and broke into the stronghold, she was found slain by a sword adorned",
+                                                                                            "with eldritch runes. The strange thing though is that people still claim to hear her voice",
+                                                                                            "from time to time, when the moon is right."
+                                                                                        },
+                                                                                term={text="Abandoned Tower",command="[A]bandoned Tower",term="Abandoned_Tower"}
+                                                                            },
                                                                  }
                                                     }
                                         },
@@ -364,7 +508,26 @@ function love.load()
                                         rooms = {{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1},{x=2,y=1},{x=0,y=2},{x=1,y=2},{x=2,y=2}},
                                         mapImage = love.graphics.newImage("Forgotten_Pit_Map.png"),
                                         roomImage = love.graphics.newImage("Emerald_Sea.png"),
-                                        searDesc = {{x=0,y=0,conds={},des={"You leave the pit. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}}},
+                                        searDesc =  {
+                                                        {x=0,y=0,conds={},des={"You leave the pit. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}
+                                                        },
+                                                        {x=2,y=2,des=   {
+                                                                            "Something is inscribed into the rock here. It reads:",
+                                                                            "3E 2N 1E 3N 1W"
+                                                                        }
+                                                        },
+                                                        {x=2,y=0,des=   {
+                                                                            "Something is inscribed into the rock here. It reads:",
+                                                                            "SEARCH THE EMERALD SEA FOR THE TRUTH."
+                                                                        }
+                                                        },
+                                                        {x=0,y=2,des=   {
+                                                                            "Something is inscribed into the rock here. It reads:",
+                                                                            "NOT ALL IS WHAT IT APPEARS TO BE. THE RED PRINCES' INFLUENCE STRETCHES FAR AND WIDE.",
+                                                                            "THERE IS NO CORRECT ANSWER TO THE QUESTION."
+                                                                        }
+                                                        },
+                                                    },
                                         walkDesc =  {
                                                         {x=0,y=0,des=   {
                                                                             "You travel to a deep chasm in the earth."
@@ -386,7 +549,7 @@ function love.load()
                                         searDesc =  {
                                                         {x=0,y=0,conds={},des={"You somehow manage to leave the hills. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}
                                                         },
-                                                        {x=3,y=5,conds={},item="Phase Amulet",des={"After some digging effort, you find the phase amulet."}},
+                                                        {x=3,y=5,conds={},item="Sword Hilt",des={"After some digging effort, you find the broken sword"}},
                                                     },
                                         walkDesc =  {
                                                         {x=0,y=0,des=   {
@@ -405,8 +568,7 @@ function love.load()
                                                     },
                                     },
                 }
-    notes = {}
-    items = {}
+    
     scale = {}
     curText = {"","","","","Night of the Crescent Moon Ver " .. gameVersion, "A text adventure by Elias Mote", "Testing done by Dred4170", "Copyright (c) Roc Studios 2019", "Press [enter] to start"}
     timer = 0
@@ -461,7 +623,7 @@ function love.draw()
         -- draw map screen
         love.graphics.rectangle("line", 440, 20, 100, 150, 10)
         
-        if(curLocation ~= "Lost_Hills" or eyeOfTruthOn) then
+        if(curLocation ~= "Lost_Hills") then
             -- draw coordinates
             love.graphics.print("Coords   " .. coords.x .. "," .. coords.y, 450, 150)
             
@@ -486,16 +648,44 @@ function love.draw()
         
         -- draw items
         for i in ipairs(items) do
-            
+            local itemX = 580
             -- draw the lantern if the player has it
             if(items[i]["text"] == "Lantern") then
                 
                 -- if the lantern is turned on
                 if(items[i]["enabled"]) then
-                    love.graphics.draw(lanternImg[math.floor(timer/30) % 2 + 1], 580, 50)
+                    love.graphics.draw(lanternImg[math.floor(timer/30) % 2 + 1], itemX, 50)
                 else
-                    love.graphics.draw(lanternImg[2], 580, 50)
+                    love.graphics.draw(lanternImg[2], itemX, 50)
                 end
+            end
+            
+            -- draw the phase amulet if the player has it
+            if(items[i]["text"] == "Phase Amulet") then
+                
+                -- if the lantern is turned on
+                if(items[i]["enabled"]) then
+                    love.graphics.draw(amuletImg[math.floor(timer/30) % 2 + 1], itemX, 80)
+                else
+                    love.graphics.draw(amuletImg[2], itemX, 80)
+                end
+            end
+            
+            -- draw the eye of truth if the player has it
+            if(items[i]["text"] == "Eye of Truth") then
+                
+                -- if the lantern is turned on
+                if(items[i]["enabled"]) then
+                    love.graphics.draw(eyeOfTruthImg[2], itemX, 110)
+                else
+                    love.graphics.draw(eyeOfTruthImg[1], itemX, 110)
+                end
+            end
+            
+            -- draw the sword hilt if the player has it
+            if(items[i]["text"] == "Sword Hilt") then
+                
+                love.graphics.draw(swordHiltImg[1], itemX, 140)
             end
         end
         
@@ -542,201 +732,262 @@ function love.keypressed(key, scancode, isrepeat)
     if(state == "game") then
         
         -- Move player (write text output if in the lost hills)
-        if(key == "up") then
-            if(curLocation == "Lost_Hills") then
-                writeToTextDisplay({"You move north"})
-            end
-            if(checkIfRoomExists(curLocation, coords.x, coords.y+1)) then
-                coords.y = coords.y + 1
-                checkWalkableDescription()
-            end
-        end
-        
-        if(key == "down") then
-            if(curLocation == "Lost_Hills") then
-                writeToTextDisplay({"You move south"})
-            end
-            
-            if(checkIfRoomExists(curLocation, coords.x, coords.y-1)) then
-                coords.y = coords.y - 1
-                checkWalkableDescription()
-            end
-        end
-        
-        if(key == "left") then
-            if(curLocation == "Lost_Hills") then
-                writeToTextDisplay({"You move west"})
-            end
-            
-            if(checkIfRoomExists(curLocation, coords.x-1, coords.y)) then
-                coords.x = coords.x - 1
-                checkWalkableDescription()
-            end
-        end
-        
-        if(key == "right") then
-            if(curLocation == "Lost_Hills") then
-                writeToTextDisplay({"You move east"})
-            end
-            
-            if(checkIfRoomExists(curLocation, coords.x+1, coords.y)) then
-                coords.x = coords.x + 1
-                checkWalkableDescription()
-            end
-        end
-        
-        -- Search area
-        if(key == "return") then
-            
-            -- If the old painting is checked too many times (more than 5), random chance for horrible fate
-            if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
-                numOfTimesPictureChecked = numOfTimesPictureChecked + 1
-                if(numOfTimesPictureChecked == 5) then
-                    writeToTextDisplay({"You feel like something bad is about to happen."})
+        if not (isAskingTheQuestion) then
+            if(key == "up") then
+                if(curLocation == "Lost_Hills") then
+                    writeToTextDisplay({"You move north"})
+                end
+                if(checkIfRoomExists(curLocation, coords.x, coords.y+1)) then
+                    coords.y = coords.y + 1
+                    checkWalkableDescription()
                 end
             end
-            
-            -- Move to the hub area
-            if((curLocation == "Bedroom" and coords.x == 1 and coords.y == 1) 
-                or (curLocation ~= "Bedroom" and coords.x == 0 and coords.y == 0)) then
-                if(checkSearchableDescription()) then
-                    curLocation = "Hub"
-                    coords.x = 0
+        
+            if(key == "down") then
+                if(curLocation == "Lost_Hills") then
+                    writeToTextDisplay({"You move south"})
+                end
+                
+                if(checkIfRoomExists(curLocation, coords.x, coords.y-1)) then
+                    coords.y = coords.y - 1
+                    checkWalkableDescription()
+                end
+            end
+        
+            if(key == "left") then
+                if(curLocation == "Lost_Hills") then
+                    writeToTextDisplay({"You move west"})
+                end
+                
+                if(checkIfRoomExists(curLocation, coords.x-1, coords.y)) then
+                    coords.x = coords.x - 1
+                    checkWalkableDescription()
+                end
+            end
+        
+            if(key == "right") then
+                if(curLocation == "Lost_Hills") then
+                    writeToTextDisplay({"You move east"})
+                end
+                
+                if(checkIfRoomExists(curLocation, coords.x+1, coords.y)) then
+                    coords.x = coords.x + 1
+                    checkWalkableDescription()
+                end
+            end
+        
+        
+            -- Search area
+            if(key == "return") then
+                
+                -- If the old painting is checked too many times (more than 5), random chance for horrible fate
+                if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
+                    numOfTimesPictureChecked = numOfTimesPictureChecked + 1
+                    if(numOfTimesPictureChecked == 5) then
+                        writeToTextDisplay({"You feel like something bad is about to happen."})
+                    end
+                end
+                
+                -- Move to the hub area
+                if((curLocation == "Bedroom" and coords.x == 1 and coords.y == 1) 
+                    or (curLocation ~= "Bedroom" and coords.x == 0 and coords.y == 0)) then
+                    if(checkSearchableDescription()) then
+                        curLocation = "Hub"
+                        coords.x = 0
+                        coords.y = 0
+                    end
+                else
+                    checkSearchableDescription()
+                end
+                
+                if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 2) then
+                    if(checkSearchableDescription()) then
+                        writeToTextDisplay({
+                                                "The sword hilt joins the blade in the altar. Suddenly, a spectre appears wearing long flowing",
+                                                "robes, a priceless brooch, and a tiara inlaid with silver and emblazoned with precious jewels.",
+                                                "The voice speaks...\"It is you who found me, you who heard me voice. I have been trapped at",
+                                                "the top of this tower ever since I perished here long ago. Please, you must help me. The blade",
+                                                "you hold; it is a remnant of the mad red prince who imprisoned me here. I must destroy it so",
+                                                "that I may ascend to heaven.\" She requests that you hand the blade over to her. Do you give",
+                                                "her the blade?  [Y]es  [N]o"
+                                            })
+                        isAskingTheQuestion = true
+                    end
+                end
+                
+                -- If the phase amulet has been searched for, move to the left of the entrance
+                if(curLocation == "Lost_Hills" and coords.x == 3 and coords.y == 5) then
+                    coords.x = -1
                     coords.y = 0
                 end
-            else
-                checkSearchableDescription()
-            end
-            
-            -- If the phase amulet has been searched for, move to the left of the entrance
-            if(curLocation == "Lost_Hills" and coords.x == 3 and coords.y == 5) then
-                coords.x = -1
-                coords.y = 0
-            end
 
-            -- If the player presses enter during dialogue, the npc should say default dialogue
-            if(isTalking) then
-                isSayingWord = false
-                writeToTextDisplay(locations[curLocation]["npc"]["dialogue"]["default"]["text"])
-                curTermToLearn = locations[curLocation]["npc"]["dialogue"]["default"]["term"]
-                writeToTextDisplay({"[S]ay","[L]earn"})
+                -- If the player presses enter during dialogue, the npc should say default dialogue
+                if(isTalking) then
+                    isSayingWord = false
+                    writeToTextDisplay(locations[curLocation]["npc"]["dialogue"]["default"]["text"])
+                    curTermToLearn = locations[curLocation]["npc"]["dialogue"]["default"]["term"]
+                    writeToTextDisplay({"[S]ay","[L]earn"})
+                end
             end
-        end
         
-        -- if the player is saying a key term
-        if(isTalking and isSayingWord and key ~= "p") then
-            --if(string.match(key,'[a-z]')) then
-            local term = keyTermMap[key]
-            for k,v in ipairs(keyTerms) do
-                if(v["term"] == term or v["text"] == term) then
-                    if(locations[curLocation]["npc"]["dialogue"][term] ~= nil) then
-                        writeToTextDisplay(locations[curLocation]["npc"]["dialogue"][term]["text"])
-                        curTermToLearn = locations[curLocation]["npc"]["dialogue"][term]["term"]
-                        isSayingWord = false
-                        writeToTextDisplay({"[S]ay","[L]earn"})
-                    else
-                        writeToTextDisplay({"?"})
-                        writeToTextDisplay({"[S]ay","[L]earn"})
+            -- if the player is saying a key term
+            if(isTalking and isSayingWord and key ~= "p") then
+                --if(string.match(key,'[a-z]')) then
+                local term = keyTermMap[key]
+                for k,v in ipairs(keyTerms) do
+                    if(v["term"] == term or v["text"] == term) then
+                        if(locations[curLocation]["npc"]["dialogue"][term] ~= nil) then
+                            writeToTextDisplay(locations[curLocation]["npc"]["dialogue"][term]["text"])
+                            curTermToLearn = locations[curLocation]["npc"]["dialogue"][term]["term"]
+                            isSayingWord = false
+                            writeToTextDisplay({"[S]ay","[L]earn"})
+                        else
+                            writeToTextDisplay({"?"})
+                            writeToTextDisplay({"[S]ay","[L]earn"})
+                        end
                     end
                 end
             end
-        end
-        
-        -- while the player is talking to an npc, tell the player to say a word
-        if(isTalking and key == "s") then
-            isSayingWord = true
-            curTermToLearn = nil
-            writeToTextDisplay({"Select a word to say:"})
-            local t = ""
-            for k,v in ipairs(keyTerms) do
-                t = t .. v["command"] .. "   "
-            end
-            writeToTextDisplay({t})
-        end
-        
-        -- List inventory items for usage
-        if(key == "i" and not isTalking and curLocation ~= "Hub") then
-            isUsingItem = true
-            --if not (isUsingItem) then
-            writeToTextDisplay({"Select an item:"})
-            for k,v in ipairs(items) do
-                writeToTextDisplay({v["command"]})
-            end
-        end
             
-        -- Learning a word
-        if(key == "l" and curLocation ~= "Hub") then
-            
-            -- If the player is talking to an npc
-            if(isTalking) then
-                
-                -- Learn a keyword if the player hasn't learned it yet
-                if(addKeyTerm(curTermToLearn)) then
-                    writeToTextDisplay({"Learned key term: " .. curTermToLearn["text"]})
-                    writeToTextDisplay({"[S]ay"})
-                end
-                
-            end
-        end
-            
-        -- If the player is using an item
-        if(isUsingItem) then
-            for i in ipairs(items) do
-                if(key == "l" and items[i]["text"] == "Lantern") then
-                    if(items[i]["enabled"]) then
-                        items[i]["enabled"] = false
-                        writeToTextDisplay({"You turned the lantern off."})
-                    else
-                        items[i]["enabled"] = true
-                        writeToTextDisplay({"You turned the lantern on."})
-                    end
-                    isUsingItem = false
-                    break
+            -- while the player is talking to an npc, tell the player to say a word
+            if(isTalking and key == "s") then
+                isSayingWord = true
+                curTermToLearn = nil
+                writeToTextDisplay({"Select a word to say:"})
+                local t = ""
+                for k,v in ipairs(keyTerms) do
+                    t = t .. v["command"] .. "   "
                     
-                elseif(key == "h" and items[i]["text"] == "Phase Amulet") then
-                    if(items[i]["enabled"]) then
-                        items[i]["enabled"] = false
-                        writeToTextDisplay({"You deactivate the phase amulet."})
-                    else
-                        items[i]["enabled"] = true
-                        writeToTextDisplay({"You activate the phase amulet."})
+                    -- Every 5 words, skip a line
+                    if(k % 5 == 0 and k ~= 0) then
+                        writeToTextDisplay({t})
+                        t = ""
                     end
-                    isUsingItem = false
-                    break
+                end
+                
+                -- Skip the last line if it is blank
+                if(t ~= "") then
+                    writeToTextDisplay({t})
                 end
             end
-        end
-        
-        -- Travel to each area from the hub
-        if(curLocation == "Hub") then
-            if(key == "a") then
-                curLocation = "Ancient_Tower"
-            elseif(key == "c") then
-                curLocation = "Crystal_Cave"
-            elseif(key == "e") then
-                curLocation = "Emerald_Sea"
-            elseif(key == "f") then
-                curLocation = "Forest_of_Spirits"
-            elseif(key == "l") then
-                curLocation = "Lost_Hills"
-            elseif(key == "o") then
-                curLocation = "Forgotten_Pit"
+            
+            -- List inventory items for usage
+            if(key == "i" and not isTalking and curLocation ~= "Hub") then
+                isUsingItem = true
+                
+                writeToTextDisplay({"Select an item:"})
+                for k,v in ipairs(items) do
+                    if(v["command"] ~= nil) then
+                        writeToTextDisplay({v["command"]})
+                    end
+                end
+            end
+                
+            -- Learning a word
+            if(key == "l" and curLocation ~= "Hub") then
+                
+                -- If the player is talking to an npc
+                if(isTalking) then
+                    
+                    -- Learn a keyword if the player hasn't learned it yet
+                    if(addKeyTerm(curTermToLearn)) then
+                        writeToTextDisplay({"Learned key term: " .. curTermToLearn["text"]})
+                        writeToTextDisplay({"[S]ay"})
+                    end
+                    
+                end
+            end
+                
+            -- If the player is using an item
+            if(isUsingItem) then
+                for i in ipairs(items) do
+                    if(key == "l" and items[i]["text"] == "Lantern") then
+                        disableItems(items[i]["text"])
+                        
+                        if(items[i]["enabled"]) then
+                            items[i]["enabled"] = false
+                            writeToTextDisplay({"You turned the lantern off."})
+                        else
+                            items[i]["enabled"] = true
+                            writeToTextDisplay({"You turned the lantern on."})
+                        end
+                        isUsingItem = false
+                        break
+                        
+                    elseif(key == "h" and items[i]["text"] == "Phase Amulet") then
+                        disableItems(items[i]["text"])
+                        
+                        if(items[i]["enabled"]) then
+                            items[i]["enabled"] = false
+                            writeToTextDisplay({"You deactivate the phase amulet."})
+                        else
+                            items[i]["enabled"] = true
+                            writeToTextDisplay({"You activate the phase amulet."})
+                        end
+                        isUsingItem = false
+                        break
+                        
+                    elseif(key == "e" and items[i]["text"] == "Eye of Truth") then
+                        disableItems(items[i]["text"])
+                        
+                        if(items[i]["enabled"]) then
+                            items[i]["enabled"] = false
+                            writeToTextDisplay({"The Eye of Truth returns to slumber."})
+                        else
+                            items[i]["enabled"] = true
+                            writeToTextDisplay({"The Eye of Truth Awakens!"})
+                        end
+                        isUsingItem = false
+                        break
+                        
+                    elseif(key == "w" and items[i]["text"] == "Sword Hilt") then
+                        disableItems(items[i]["text"])
+                        
+                        if(items[i]["enabled"]) then
+                            items[i]["enabled"] = false
+                            writeToTextDisplay({"You put the sword hilt away into your scabbard."})
+                        else
+                            items[i]["enabled"] = true
+                            writeToTextDisplay({"You pull the sword hilt out."})
+                        end
+                        isUsingItem = false
+                        break
+                    end
+                end
             end
             
-            if(curLocation ~= "Hub") then
-                checkWalkableDescription()
+            -- Travel to each area from the hub
+            if(curLocation == "Hub") then
+                if(key == "a") then
+                    curLocation = "Ancient_Tower"
+                elseif(key == "c") then
+                    curLocation = "Crystal_Cave"
+                elseif(key == "e") then
+                    curLocation = "Emerald_Sea"
+                elseif(key == "f") then
+                    curLocation = "Forest_of_Spirits"
+                elseif(key == "l") then
+                    curLocation = "Lost_Hills"
+                elseif(key == "o") then
+                    curLocation = "Forgotten_Pit"
+                end
+                
+                if(curLocation ~= "Hub") then
+                    checkWalkableDescription()
+                end
             end
+            
         end
-        
     end
+    
     -- Pause game
-    if(key == "p") then
+    --[[if(key == "p" and not isAskingTheQuestion) then
         if(state == "game") then
             state = "inventory"
         elseif(state == "inventory") then
             state = "game"
         end
-    end
+    end]]
     
 
 end

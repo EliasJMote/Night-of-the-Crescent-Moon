@@ -1,5 +1,5 @@
 ﻿Night of the Crescent Moon
-Version 0.7.0
+Version 0.9.1
 
 Copyright © 2019 Elias Mote
 Copyright © 2019 Roc Studios
@@ -22,7 +22,22 @@ strictly prohibited, and a violation of copyright.
 II. Version History
 
 ------------------------
-V0.7.0 - Current Version
+V0.9.1 - Current Version
+------------------------
+-- Added bare bones for 3 different endings (1 good, 2 bad)
+-- Fixed some text bugs where checking the painting or altar resulted in a line being read twice
+-- Added the Eye of Truth to the player's inventory during the good ending
+
+------------------------
+V0.9.0
+------------------------
+- Added a huge amount of dialogue and clues scattered about
+- Added phase amulet and broken sword to items that can be obtained
+- Disabled pause menu (doesn't seem necessary with only 4 items)
+- Ghostly princess at the altar asks a question (leads to bad ending either way, bad ending needs to be written)
+
+------------------------
+V0.7.0
 ------------------------
 - Added stone statue npc
 - Added a significant amount of descriptions and dialogue

@@ -36,6 +36,7 @@ function checkSearchableDescription()
     -- Serach the spot
     for k,v in ipairs(locations[curLocation]["searDesc"]) do
         if(coords.x == v.x and coords.y == v.y) then
+            
             if(v.cond ~= nil) then
                 for i in ipairs(items) do
                     if(items[i]["text"] == v.cond and items[i]["enabled"]) then
@@ -49,7 +50,6 @@ function checkSearchableDescription()
                     writeToTextDisplay({"The painting sits there."})
                 elseif(v.cond == "Sword Hilt") then
                     writeToTextDisplay({"Half of a sword blade is embedded into the altar. It seems to be missing a hilt..."})
-                --elseif(v.cond == "
                 end
                 return false
             else
@@ -149,6 +149,7 @@ function love.load()
     isUsingItem = false
     numOfTimesPictureChecked = 0
     isAskingTheQuestion = false
+    ending = {isGameEnding=false, number=1, state=1}
     
     ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top.png")
     
@@ -303,7 +304,7 @@ function love.load()
                                                                                               "A cacophony of sound to usher in the forgotten.",
                                                                                               "The impetus of your fate, a voice sweet like the siren sailing across the void.",
                                                                                               "What knows your path, that dark road that leads to misery and solitude in the end?",
-                                                                                              "MEMORIES OF THE LOST, SHADOWE PEOPLE AT THE END OF THE DARKENED STREET.",
+                                                                                              "MEMORIES OF THE LOST, SHADOWE PEOPLE WHO WANDER THE DARKENED STREET.",
                                                                                               "WHAT ARE YOU RUNNING FROM? WHERE ARE YOU GOING? WHO GOES THERE?"
                                                                                              }
                                                                                     },
@@ -323,6 +324,12 @@ function love.load()
                                                                 }
                                                 }
                                     },
+                    Dark_Road = {
+                                    rooms = {{x=0,y=0}},
+                                    roomImage = love.graphics.newImage("Emerald_Sea.png"),
+                                    searDesc = {},
+                                    walkDesc = {},
+                                },
                     Emerald_Sea =   {
                                         rooms = {{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1},{x=1,y=1},{x=2,y=1},{x=0,y=2},{x=1,y=2},{x=2,y=2},{x=3,y=1},{x=4,y=1}},
                                         mapImage = love.graphics.newImage("Emerald_Sea_Map.png"),
@@ -618,12 +625,16 @@ function love.draw()
                     love.graphics.draw(npcImg, 30, 30)
                 end
             end
+            
+            if(ending["state"] >= 23) then
+                love.graphics.draw(titleScreen, 30, 30)
+            end
         end
         
         -- draw map screen
         love.graphics.rectangle("line", 440, 20, 100, 150, 10)
         
-        if(curLocation ~= "Lost_Hills") then
+        if(curLocation ~= "Lost_Hills" and curLocation ~= "Dark_Road") then
             -- draw coordinates
             love.graphics.print("Coords   " .. coords.x .. "," .. coords.y, 450, 150)
             
@@ -732,7 +743,7 @@ function love.keypressed(key, scancode, isrepeat)
     if(state == "game") then
         
         -- Move player (write text output if in the lost hills)
-        if not (isAskingTheQuestion) then
+        if (isAskingTheQuestion == false and ending["isGameEnding"] == false) then
             if(key == "up") then
                 if(curLocation == "Lost_Hills") then
                     writeToTextDisplay({"You move north"})
@@ -780,15 +791,8 @@ function love.keypressed(key, scancode, isrepeat)
             -- Search area
             if(key == "return") then
                 
-                -- If the old painting is checked too many times (more than 5), random chance for horrible fate
-                if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
-                    numOfTimesPictureChecked = numOfTimesPictureChecked + 1
-                    if(numOfTimesPictureChecked == 5) then
-                        writeToTextDisplay({"You feel like something bad is about to happen."})
-                    end
-                end
-                
-                -- Move to the hub area
+                --
+                -- Move to the hub area from various locations
                 if((curLocation == "Bedroom" and coords.x == 1 and coords.y == 1) 
                     or (curLocation ~= "Bedroom" and coords.x == 0 and coords.y == 0)) then
                     if(checkSearchableDescription()) then
@@ -796,11 +800,10 @@ function love.keypressed(key, scancode, isrepeat)
                         coords.x = 0
                         coords.y = 0
                     end
-                else
-                    checkSearchableDescription()
-                end
-                
-                if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 2) then
+                    
+                -- Use items --
+                -- If player uses the sword hilt at the altar
+                elseif(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 2) then
                     if(checkSearchableDescription()) then
                         writeToTextDisplay({
                                                 "The sword hilt joins the blade in the altar. Suddenly, a spectre appears wearing long flowing",
@@ -813,7 +816,27 @@ function love.keypressed(key, scancode, isrepeat)
                                             })
                         isAskingTheQuestion = true
                     end
+                    
+                
+                -- If player uses the phase amulet at the old painting
+                elseif(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
+                    if(checkSearchableDescription()) then
+                        curLocation = "Dark_Road"
+                        ending = {isGameEnding=true, number=3, state=1}
+                    end
+                    
+                    -- If the old painting is checked too many times (more than 5), random chance for horrible fate
+                    --[[numOfTimesPictureChecked = numOfTimesPictureChecked + 1
+                    if(numOfTimesPictureChecked == 5) then
+                        writeToTextDisplay({"You feel like something bad is about to happen."})
+                    end]]
+                    
+                -- If place isn't special
+                else
+                    checkSearchableDescription()
                 end
+                
+                
                 
                 -- If the phase amulet has been searched for, move to the left of the entrance
                 if(curLocation == "Lost_Hills" and coords.x == 3 and coords.y == 5) then
@@ -977,6 +1000,111 @@ function love.keypressed(key, scancode, isrepeat)
                 end
             end
             
+        elseif (isAskingTheQuestion == true and ending["isGameEnding"] == false) then
+            if(key == "y") then
+                writeToTextDisplay({"The princess takes the ancient sword. Suddenly, a third red eye appears on her forehead.",
+                                    "Before you can move, the princess stabs you through the stomach. Blood from the wound",
+                                    "begins to pool onto the altar. As your consciousness fades, you hear the faintest sound of",
+                                    "contorted laughter alongside pipe organs and a fiendish dirge."})
+                ending["isGameEnding"] = true
+                ending["number"] = 1
+                
+            elseif(key == "n") then
+                writeToTextDisplay({"Hmm...curious. You don't seem to understand", "SINCE WHEN WERE YOU THE ONE IN CONTROL?"})
+                ending["isGameEnding"] = true
+                ending["number"] = 2
+            end
+        elseif(ending["isGameEnding"] == true) then
+            if(key == "return") then
+                
+                if(ending["number"] <= 2) then
+                    love.event.quit()
+                end
+                
+                if(ending["number"] == 3) then
+                    if(ending["state"] == 1) then
+                        writeToTextDisplay({"The church dissolves before your eyes. A dark road lies in front of you."})
+                    elseif(ending["state"] == 2) then
+                        writeToTextDisplay({"A distant light is the only sight."})
+                    elseif(ending["state"] == 3) then
+                        writeToTextDisplay({"You feel a strange prescence."})
+                    elseif(ending["state"] == 4) then
+                        writeToTextDisplay({"\"A razor thin veil between this world and the next.\""})
+                    elseif(ending["state"] == 5) then
+                        writeToTextDisplay({"\"A cacophony of sound to usher in the forgotten.\""})
+                    elseif(ending["state"] == 6) then
+                        writeToTextDisplay({"\"The impetus of your fate, a voice sweet like the siren sailing across the void.\""})
+                    elseif(ending["state"] == 7) then
+                        writeToTextDisplay({"\"What knows your path, that dark road that leads to misery and solitude in the end?\""})
+                    elseif(ending["state"] == 8) then
+                        writeToTextDisplay({"\"MEMORIES OF THE LOST,\""})
+                    elseif(ending["state"] == 9) then
+                        writeToTextDisplay({"\"SHADOWE PEOPLE WHO WANDER THE DARKENED STREET.\""})
+                    elseif(ending["state"] == 10) then
+                        writeToTextDisplay({"\"WHAT ARE YOU RUNNING FROM?\""})
+                    elseif(ending["state"] == 11) then
+                        writeToTextDisplay({"\"WHERE ARE YOU GOING?\""})
+                    elseif(ending["state"] == 12) then
+                        writeToTextDisplay({"\"WHO GOES THERE?\""})
+                    elseif(ending["state"] == 13) then
+                        writeToTextDisplay({"[You cannot move]"})
+                    elseif(ending["state"] == 14) then
+                        writeToTextDisplay({"[You find the Eye of Truth. Light shines from its eye and illuminates all...]"})
+                        disableItems("Eye of Truth")
+                        table.insert(items, {text="Eye of Truth",command="[E]ye of Truth",enabled=true})
+                    elseif(ending["state"] == 15) then
+                        writeToTextDisplay({"\"THE EYE OF TRUTH..............IT SEES............\""})
+                    elseif(ending["state"] == 16) then
+                        writeToTextDisplay({"\"THROUGH ILLUSIONS. THE EYE...............................\""})
+                    elseif(ending["state"] == 17) then
+                        writeToTextDisplay({"\"THE EYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!!\""})
+                    elseif(ending["state"] == 18) then
+                        writeToTextDisplay({"\"THE EYEEEE EEEYEEE THE EEEEYYYYEEEEYEY EEYYYYEY EYEYEYE YEY\""})
+                    elseif(ending["state"] == 19) then
+                        writeToTextDisplay({"\"...\""})
+                    elseif(ending["state"] == 20) then
+                        writeToTextDisplay({"\"?\""})
+                    elseif(ending["state"] == 21) then
+                        writeToTextDisplay({"[The world crumbles at your feet]"})
+                    elseif(ending["state"] == 22) then
+                        writeToTextDisplay({"[In a flash of light, you reappear in your bedroom.]"})
+                    elseif(ending["state"] == 23) then
+                        writeToTextDisplay({"Those people...the woman of stone...the knight of crystal...the spirit of the forest..."})
+                    elseif(ending["state"] == 24) then
+                        writeToTextDisplay({"the princess from the ether...the red prince, an inhabitant of carc____...what were they?"})
+                    elseif(ending["state"] == 25) then
+                        writeToTextDisplay({"Who were they?"})
+                    elseif(ending["state"] == 26) then
+                        writeToTextDisplay({"What were their paths?"})
+                    elseif(ending["state"] == 27) then
+                        writeToTextDisplay({"..."})
+                    elseif(ending["state"] == 28) then
+                        writeToTextDisplay({"WHAT IS YOUR PATH?"})
+                    elseif(ending["state"] == 29) then
+                        writeToTextDisplay({"WHERE WILL YOU GO?"})
+                    elseif(ending["state"] == 30) then
+                        writeToTextDisplay({"ON THIS NIGHT OF THE CRESCENT MOON..."})
+                    elseif(ending["state"] == 31) then
+                        writeToTextDisplay({"WHAT DARK ROAD LIT BY A MERE GLIMMER WILL YOU TAKE?"})
+                    elseif(ending["state"] == 32) then
+                        writeToTextDisplay({"THE RED PRINCE, CHILDE OF THE VOID..."})
+                    elseif(ending["state"] == 33) then
+                        writeToTextDisplay({"ON A FORGOTTEN ROAD BENEATH A SILVERY SKY..."})
+                    elseif(ending["state"] == 34) then
+                        writeToTextDisplay({"ALONGSIDE THE SHADOWE PEOPLE, HE SLEEPS..."})
+                    elseif(ending["state"] == 35) then
+                        writeToTextDisplay({"AND WAITS"})
+                    elseif(ending["state"] == 36) then
+                        writeToTextDisplay({"............."})
+                    elseif(ending["state"] == 37) then
+                        writeToTextDisplay({"The end"})
+                    elseif(ending["state"] == 38) then
+                        love.event.quit()
+                    end
+                end
+                
+                ending["state"] = ending["state"] + 1
+            end
         end
     end
     

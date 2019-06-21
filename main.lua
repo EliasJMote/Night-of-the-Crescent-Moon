@@ -152,6 +152,7 @@ function love.load()
     ending = {isGameEnding=false, number=1, state=1}
     
     ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top.png")
+    ancientTowerPainting = love.graphics.newImage("Ancient_Tower_Painting.png")
     
     -- Locations: Ancient Tower, Bedroom, Crystal Cave, Emerald Sea, Forest of Spirits, Forgotten Pit, Lost Hills
     curLocation = "Bedroom"
@@ -213,13 +214,16 @@ function love.load()
                                                             {
                                                                 x=0,y=1,des={
                                                                                 "You step through, encountering a large ornate picture hanging on the wall. The antique is",
+                                                                                "covered top to bottom in dust, but is otherwise undamaged. The picture is of a lone dark",
+                                                                                "road with a single star shining in the sky."
+                                                                                --[["You step through, encountering a large ornate picture hanging on the wall. The antique is",
                                                                                 "covered top to bottom in dust, but is otherwise undamaged. The picture is of the inside of a",
                                                                                 "grand cathedral that has aged wretchedly. Blue candles sit melted in cast bronze holders, and",
                                                                                 "an enormous pipe organ dominates the frame. The pipes reach for the heavens; however, many",
                                                                                 "of them are smashed or twisted around in a horrific display of strange art. Stained glass windows",
                                                                                 "sag with lengthy age, contorting images of priests and angels. A lone musical sheet sits on the",
                                                                                 "organ, perfectly immaculate and pristine amidst the ruination. A sudden feeling of dread crawls",
-                                                                                "up your spine and seems to choke your lungs."
+                                                                                "up your spine and seems to choke your lungs."]]
                                                                             }
                                                             },
                                                             {
@@ -285,11 +289,8 @@ function love.load()
                                                                                     term={text="Red Prince",command="[R]ed Prince",term="Red_Prince"}
                                                                                     },
                                                                     Eye_of_Truth={
-                                                                                    text={"THE EYE OF TRUTH..............IT SEES............THROUGH ILLUSIONS. THE EYE...............................",
-                                                                                        "THE EYEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!!!! THE EYEEEE EEEYEEE THE",
-                                                                                        "EEEEYYYYEEEEYEYE",
-                                                                                        "",
-                                                                                        "?",
+                                                                                    text={"THE EYE OF TRUTH..............IT SEES............THROUGH ILLUSIONS.",
+                                                                                            "IT WAS CRAFTED......THROUGH DIVINE MAGIC.........BY SOOTHSAYER ASTREA.",
                                                                                         },
                                                                                     
                                                                                  },
@@ -300,12 +301,8 @@ function love.load()
                                                                                     text={"DO NOT LOSE YOUR WAY IN THE LOST HILLS, OR YOU WILL NEVER ESCAPE."}
                                                                                 },
                                                                     Phase_Amulet=  {
-                                                                                        text={"A razor thin veil between this world and the next.",
-                                                                                              "A cacophony of sound to usher in the forgotten.",
-                                                                                              "The impetus of your fate, a voice sweet like the siren sailing across the void.",
-                                                                                              "What knows your path, that dark road that leads to misery and solitude in the end?",
-                                                                                              "MEMORIES OF THE LOST, SHADOWE PEOPLE WHO WANDER THE DARKENED STREET.",
-                                                                                              "WHAT ARE YOU RUNNING FROM? WHERE ARE YOU GOING? WHO GOES THERE?"
+                                                                                        text={"A MYSTICAL AMULET......IT BRIDGES THE DIVIDE BETWEEN HERE AND THE VOID, THE SPACE",
+                                                                                            "BETWEEN SPACES"
                                                                                              }
                                                                                     },
                                                                     Red_Prince= {
@@ -534,7 +531,7 @@ function love.load()
                     Forgotten_Pit = {
                                         rooms = {{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=0,y=1},{x=2,y=1},{x=0,y=2},{x=1,y=2},{x=2,y=2}},
                                         mapImage = love.graphics.newImage("Forgotten_Pit_Map.png"),
-                                        roomImage = love.graphics.newImage("Emerald_Sea.png"),
+                                        roomImage = love.graphics.newImage("Forgotten_Pit.png"),
                                         searDesc =  {
                                                         {x=0,y=0,conds={},des={"You leave the pit. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}
                                                         },
@@ -546,7 +543,7 @@ function love.load()
                                                         {x=2,y=0,des=   {
                                                                             "Something is inscribed into the rock here. It reads:",
                                                                             "SEARCH THE EMERALD SEA FOR THE [PHASE AMULET]. IT ALONE CAN LEAD YOU TO THE RED",
-                                                                            "PRINCE. HE IS TRAPPED WITHOUT HIS PRECIOUS TRINKET, BUT HIS CONTROLS _____________",
+                                                                            "PRINCE. HE IS TRAPPED WITHOUT HIS PRECIOUS TRINKET, BUT HE CONTROLS _____________",
                                                                             "AND ___________ (The words have faded from excessive wear by the elements)."
                                                                         }
                                                         },
@@ -577,8 +574,7 @@ function love.load()
                             },
                     Lost_Hills = {
                                         rooms = {{x=0,y=0},{x=1,y=0},{x=2,y=0},{x=3,y=0},{x=3,y=1},{x=3,y=2},{x=4,y=2},{x=4,y=3},{x=4,y=4},{x=4,y=5},{x=3,y=5}},
-                                        mapImage = love.graphics.newImage("Hub_Map.png"),
-                                        roomImage = love.graphics.newImage("Emerald_Sea.png"),
+                                        roomImage = love.graphics.newImage("Lost_Hills.png"),
                                         searDesc =  {
                                                         {x=0,y=0,conds={},des={"You somehow manage to leave the hills. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"}
                                                         },
@@ -641,6 +637,8 @@ function love.draw()
             if(isTalking == false) then
                 if(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 2) then
                     love.graphics.draw(ancientTowerTop, 30, 30)
+                elseif(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
+                    love.graphics.draw(ancientTowerPainting, 30, 30)
                 else
                     love.graphics.draw(locations[curLocation]["roomImage"], 30, 30)
                 end
@@ -737,28 +735,6 @@ function love.draw()
         -- draw blinking cursor
         if(timer % 60 < 60 / 2) then
             love.graphics.rectangle("fill", 30 , 317 , 8 , 12)
-        end
-        
-    -- if the game is on the inventory screen
-    elseif(state == "inventory") then
-        -- draw inventory screen
-        love.graphics.rectangle("line", 20, 20, 600, 150, 10)
-        
-        -- draw inventory text
-        love.graphics.print("Inventory", 280, 30)
-        
-        -- draw key terms screen
-        love.graphics.rectangle("line", 20, 190, 600, 150, 10)
-        
-        -- draw key terms text
-        love.graphics.print("Key terms", 280, 200)
-        for i in ipairs(keyTerms) do
-            love.graphics.print(keyTerms[i]["text"], 40, 220 + (i-1) * 20)
-        end
-        
-        -- draw items text
-        for i in ipairs(items) do
-            love.graphics.print(items[i]["text"], 40, 60 + (i-1) * 20)
         end
     end
 end

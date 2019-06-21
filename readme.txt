@@ -1,5 +1,5 @@
 ﻿Night of the Crescent Moon
-Version 0.9.1
+Version 0.9.2
 
 Copyright © 2019 Elias Mote
 Copyright © 2019 Roc Studios
@@ -20,6 +20,12 @@ author. Placement of this readme or game on any other web site or as a part of a
 strictly prohibited, and a violation of copyright.
 
 II. Version History
+
+------------------------
+V0.9.2 - Current Version
+------------------------
+-- Added additional dialogue.
+-- Added notes in the Forgotten Pit that add the [Eye of Truth] and [Phase Amulet] key terms
 
 ------------------------
 V0.9.1 - Current Version

@@ -294,7 +294,7 @@ function love.load()
                                                                                     
                                                                                  },
                                                                     Emerald_Sea= {
-                                                                                text={"THE EMERALD SEA HIDES SECRETS BURIED IN THE EARTH."},
+                                                                                text={"THE EMERALD SEA...A WOMAN WHOSE FLESH TURNED TO STONE FROM AN ETERNITY OF WAITING."},
                                                                             },
                                                                     Lost_Hills= {
                                                                                     text={"DO NOT LOSE YOUR WAY IN THE LOST HILLS, OR YOU WILL NEVER ESCAPE."}
@@ -344,9 +344,10 @@ function love.load()
                                                             x=0,
                                                             y=0,
                                                             des=    {
-                                                                        "You walk out and behold a serene sea that sparkles like turquoises in the moonlight. A lighthouse",
-                                                                        "radiates with a haunting glow from a distance. The gentle lapping of ocean waves can be heard",
-                                                                        "nearby."
+                                                                        "You walk out and behold a serene sea that sparkles like turquoises in the moonlight. A",
+                                                                        "lighthouse radiates with a haunting glow from a distance. The gentle lapping of ocean waves",
+                                                                        "can be heard nearby. The sea air feels fresh and vibrant to the senses. You can hear the",
+                                                                        "splash of an occasional fish that leaps up and kisses the edge of the sky."
                                                                     }
                                                         },
                                                         {   x=4,
@@ -367,6 +368,15 @@ function love.load()
                                                                                 text={"(No response)","The gentle waves of the [Emerald Sea] can be heard nearby"},
                                                                                 term={text="Emerald Sea",command="E[m]erald Sea",term="Emerald_Sea"}
                                                                             },
+                                                                    Emerald_Sea=    {
+                                                                                text=   {
+                                                                                            "(You hear a voice in your head)",
+                                                                                            "Long did I wait for my betrothed to return from the war. Alas, I stood at this shore for years",
+                                                                                            "without seeing him. Still, I will wait for him. My faith in my husband is unwavering, a mighty",
+                                                                                            "foundation upon which our relationship was built. I shall stand here until the water devours",
+                                                                                            "my body of stone, for he would traverse even the dark road for my sake."
+                                                                                        },
+                                                                                },
                                                                     Eye_of_Truth=   {
                                                                                         text=   {
                                                                                                     "(You hear a voice in your head)",
@@ -375,10 +385,14 @@ function love.load()
                                                                                         --term={text="Forest",command="[F]orest"}
                                                                                     },
                                                                     Forgotten_Pit=  {
-                                                                                        text=   {
-                                                                                                    "(You hear a voice in your head)",
-                                                                                                    "Search the Forgotten Pit for clues."
-                                                                                                },
+                                                                                    text={
+                                                                                            "(You hear a voice in your head)",
+                                                                                            "The Forgotten Pit is the festering cesspool of corpses of people who knew the truth about this",
+                                                                                            "world. Violent men and women, who spat on their names, calling them worshippers of the mad",
+                                                                                            "red prince and his dark arts, slaughtered those truth seekers, for these barbarians did not",
+                                                                                            "want to change their worldviews. There may be some written records of these people buried",
+                                                                                            "near the tar-drenched pit."
+                                                                                        },
                                                                                     },
                                                                     Phase_Amulet=   {
                                                                                         text=   {
@@ -389,22 +403,28 @@ function love.load()
                                                                                     },
                                                                     Red_Prince= {
                                                                                     text=   {
-                                                                                                "THE RED PRINCE",
-                                                                                                "THE RED PRINCE",
-                                                                                                "THE RED PRINCE",
-                                                                                                "THE RED PRINCE",
+                                                                                                "THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE",
+                                                                                                "THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE",
                                                                                                 "HIS POWER IS VAST! HIS ILLUSIONS ARE STRONG!",
                                                                                                 "HE PUPPETS THE PRINCESS! HE PUPPETS THE PRINCESS!",
-                                                                                                "(The statue's head stretches, and the body contorts horribly...)"
+                                                                                                "(The sky rapidly flickers with lightning)",
+                                                                                                "Out of the corner of your eye, you think you see a shadow figure momentarily."
                                                                                             }
                                                                                 },
                                                                     Sword_Hilt= {
                                                                                     text=   {
                                                                                                 "(You hear a voice in your head)",
                                                                                                 "The astral blade was once whole. Bring the hilt to the altar if you wish to speak to the",
-                                                                                                "princess who calls your name. The blade will rejoin when its hilt is close"
+                                                                                                "being who calls your name. The blade will rejoin when its hilt is close."
                                                                                             },
-                                                                                }
+                                                                                },
+                                                                    Voice=  {
+                                                                                text=   {
+                                                                                            "(You hear a voice in your head)",
+                                                                                            "A sweet tune dances to the symphonic thermals of the air. It is the spectral voice, the siren's",
+                                                                                            "magnetic call that attracts. Fate has knocked on your door. Will you answer it?"
+                                                                                        }
+                                                                            }
                                                                 }
                                                 }
                                     },
@@ -525,19 +545,25 @@ function love.load()
                                                         },
                                                         {x=2,y=0,des=   {
                                                                             "Something is inscribed into the rock here. It reads:",
-                                                                            "SEARCH THE EMERALD SEA FOR THE TRUTH."
+                                                                            "SEARCH THE EMERALD SEA FOR THE [PHASE AMULET]. IT ALONE CAN LEAD YOU TO THE RED",
+                                                                            "PRINCE. HE IS TRAPPED WITHOUT HIS PRECIOUS TRINKET, BUT HIS CONTROLS _____________",
+                                                                            "AND ___________ (The words have faded from excessive wear by the elements)."
                                                                         }
                                                         },
                                                         {x=0,y=2,des=   {
                                                                             "Something is inscribed into the rock here. It reads:",
                                                                             "NOT ALL IS WHAT IT APPEARS TO BE. THE RED PRINCES' INFLUENCE STRETCHES FAR AND WIDE.",
-                                                                            "THERE IS NO CORRECT ANSWER TO THE QUESTION."
+                                                                            "THERE IS NO CORRECT ANSWER TO THE QUESTION. SEEK THE [EYE OF TRUTH]."
                                                                         }
                                                         },
                                                     },
                                         walkDesc =  {
                                                         {x=0,y=0,des=   {
-                                                                            "You travel to a deep chasm in the earth."
+                                                                            "You travel to a deep chasm in the earth. The pit is filled with a light-consuming tar. A horrifying",
+                                                                            "stench wafts through the air, conjuring smells of death and decay. You can just make out the",
+                                                                            "pearly bones of human skeletons that are stuck in the viscous fluid, clawing for life in vain. The",
+                                                                            "dirt surrounding the pit is the color of reddish clay, and the environment is devoid of any flora",
+                                                                            "or fauna."
                                                                         }
                                                         },
                                                     },
@@ -563,7 +589,7 @@ function love.load()
                                                                             "You encounter a series of forboding, shadowy hills. Decaying trees and muck colored leaves lie",
                                                                             "about. The air is still and dry in the pale sliver of moonlight. You try to make your way through",
                                                                             "the winding land, but every so often, you lose your way, as if the hills themselves are shifting",
-                                                                            "about when you aren't looking at them. Press [enter] to leave."
+                                                                            "about when you aren't looking at them. Press [r] at anytime to leave."
                                                                         }
                                                         },
                                                         {x=4,y=5,des=   {"You trip over the bones of a goblin. They have been picked clean by the monstrous vultures that",
@@ -589,8 +615,8 @@ function love.update(dt)
         timer = timer + 1
     end
     if(state == "title" and love.keyboard.isDown("return")) then
-        writeToTextDisplay({"You are in a small bedroom. Your unmade bed lies before you. A coyote howls in the distance. An", 
-                "ethereal voice can be heard, calling your name from afar."})
+        writeToTextDisplay({"You are in a small bedroom. Your unmade bed lies before you. A coyote howls in the distance.", 
+                "An ethereal voice can be heard, calling your name from afar."})
         state = "game"
     end
 end
@@ -788,11 +814,11 @@ function love.keypressed(key, scancode, isrepeat)
             end
         
         
-            -- Search area
+            -- Search area or use activated item
             if(key == "return") then
                 
-                --
                 -- Move to the hub area from various locations
+                -- Player must use lantern from the bedroom to leave
                 if((curLocation == "Bedroom" and coords.x == 1 and coords.y == 1) 
                     or (curLocation ~= "Bedroom" and coords.x == 0 and coords.y == 0)) then
                     if(checkSearchableDescription()) then
@@ -801,28 +827,30 @@ function love.keypressed(key, scancode, isrepeat)
                         coords.y = 0
                     end
                     
-                -- Use items --
-                -- If player uses the sword hilt at the altar
-                elseif(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 2) then
-                    if(checkSearchableDescription()) then
-                        writeToTextDisplay({
-                                                "The sword hilt joins the blade in the altar. Suddenly, a spectre appears wearing long flowing",
-                                                "robes, a priceless brooch, and a tiara inlaid with silver and emblazoned with precious jewels.",
-                                                "The voice speaks...\"It is you who found me, you who heard me voice. I have been trapped at",
-                                                "the top of this tower ever since I perished here long ago. Please, you must help me. The blade",
-                                                "you hold; it is a remnant of the mad red prince who imprisoned me here. I must destroy it so",
-                                                "that I may ascend to heaven.\" She requests that you hand the blade over to her. Do you give",
-                                                "her the blade?  [Y]es  [N]o"
-                                            })
-                        isAskingTheQuestion = true
-                    end
-                    
                 
-                -- If player uses the phase amulet at the old painting
-                elseif(curLocation == "Ancient_Tower" and coords.x == 0 and coords.y == 1) then
-                    if(checkSearchableDescription()) then
-                        curLocation = "Dark_Road"
-                        ending = {isGameEnding=true, number=3, state=1}
+                -- If player uses the sword hilt at the altar
+                elseif(curLocation == "Ancient_Tower" and coords.x == 0) then
+                    if(coords.y == 2) then
+                        if(checkSearchableDescription()) then
+                            writeToTextDisplay({
+                                                    "The sword hilt joins the blade in the altar. Suddenly, a spectre appears wearing long flowing",
+                                                    "robes, a priceless brooch, and a tiara inlaid with silver and emblazoned with precious jewels.",
+                                                    "The voice speaks...\"It is you who found me, you who heard me voice. I have been trapped at",
+                                                    "the top of this tower ever since I perished here long ago. Please, you must help me. The blade",
+                                                    "you hold; it is a remnant of the mad red prince who imprisoned me here. I must destroy it so",
+                                                    "that I may ascend to heaven.\" She requests that you hand the blade over to her. Do you give",
+                                                    "her the blade?  [Y]es  [N]o"
+                                                })
+                            isAskingTheQuestion = true
+                        end
+                        
+                    -- If player uses the phase amulet at the old painting
+                    elseif(coords.y == 1) then
+                        
+                        if(checkSearchableDescription()) then
+                            curLocation = "Dark_Road"
+                            ending = {isGameEnding=true, number=3, state=1}
+                        end
                     end
                     
                     -- If the old painting is checked too many times (more than 5), random chance for horrible fate
@@ -830,6 +858,22 @@ function love.keypressed(key, scancode, isrepeat)
                     if(numOfTimesPictureChecked == 5) then
                         writeToTextDisplay({"You feel like something bad is about to happen."})
                     end]]
+                    
+                    
+                elseif(curLocation == "Forgotten_Pit") then
+                    if(coords.x == 2 and coords.y == 0) then
+                        checkSearchableDescription()
+                        if(addKeyTerm({text="Phase Amulet",command="P[h]ase Amulet",term="Phase_Amulet"})) then
+                            writeToTextDisplay({"Learned key term: Phase Amulet"})
+                        end
+                    elseif(coords.x == 0 and coords.y == 2) then
+                        checkSearchableDescription()
+                        if(addKeyTerm({text="Eye of Truth",command="[E]ye of Truth",term="Eye_of_Truth"})) then
+                            writeToTextDisplay({"Learned key term: Eye of Truth"})
+                        end
+                    else
+                        checkSearchableDescription()
+                    end
                     
                 -- If place isn't special
                 else
@@ -855,7 +899,7 @@ function love.keypressed(key, scancode, isrepeat)
         
             -- if the player is saying a key term
             if(isTalking and isSayingWord and key ~= "p") then
-                --if(string.match(key,'[a-z]')) then
+                
                 local term = keyTermMap[key]
                 for k,v in ipairs(keyTerms) do
                     if(v["term"] == term or v["text"] == term) then
@@ -919,6 +963,14 @@ function love.keypressed(key, scancode, isrepeat)
                     end
                     
                 end
+            end
+            
+            -- Leave the forgotten hills
+            if(key == "r" and curLocation == "Lost_Hills" and not isTalking) then
+                curLocation = "Hub"
+                coords.x = 0
+                coords.y = 0
+                writeToTextDisplay({"You somehow manage to leave the hills. Several paths sprawl before you in the dim moonlight.","Where do you wish to go?","[A]ncient Tower", "[C]rystal Cave", "[E]merald Sea", "[F]orest of Spirits", "[L]ost Hills", "F[o]rgotten Pit"})
             end
                 
             -- If the player is using an item

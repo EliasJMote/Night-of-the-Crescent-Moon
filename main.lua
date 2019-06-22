@@ -1,3 +1,27 @@
+function setItemsToRed()
+    love.graphics.setColor(255,0,0,1)
+    lanternImg = {love.graphics.newImage("Lantern_1_Red.png"), love.graphics.newImage("Lantern_2_Red.png")}
+    amuletImg = {love.graphics.newImage("Phase_Amulet_1_Red.png"), love.graphics.newImage("Phase_Amulet_2_Red.png")}
+    eyeOfTruthImg = {love.graphics.newImage("Eye_of_Truth_1.png"), love.graphics.newImage("Eye_of_Truth_2.png")}
+    swordHiltImg = {love.graphics.newImage("Sword_Hilt_1_Red.png"), love.graphics.newImage("Sword_Hilt_2_Red.png")}
+    titleScreen = love.graphics.newImage("Title_Picture_Red.png")
+    ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top_Red.png")
+    locations["Ancient_Tower"]["mapImage"] = love.graphics.newImage("Ancient_Tower_Map_Red.png")
+    locations["Dark_Road"]["roomImage"] = ancientTowerPaintingRed
+end
+
+function setItemsToGreen()
+    love.graphics.setColor(0,255,0,1)
+    lanternImg = {love.graphics.newImage("Lantern_1.png"), love.graphics.newImage("Lantern_2.png")}
+    amuletImg = {love.graphics.newImage("Phase_Amulet_1.png"), love.graphics.newImage("Phase_Amulet_2.png")}
+    eyeOfTruthImg = {love.graphics.newImage("Eye_of_Truth_1_Green.png"), love.graphics.newImage("Eye_of_Truth_2_Green.png")}
+    swordHiltImg = {love.graphics.newImage("Sword_Hilt_1.png"), love.graphics.newImage("Sword_Hilt_2.png")}
+    titleScreen = love.graphics.newImage("Title Picture.png")
+    ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top.png")
+    locations["Ancient_Tower"]["mapImage"] = love.graphics.newImage("Ancient_Tower_Map.png")
+    locations["Dark_Road"]["roomImage"] = ancientTowerPainting
+end
+
 -- Disable items not in use
 function disableItems(text)
     for j in ipairs(items) do
@@ -140,11 +164,14 @@ end
 function love.load()
     
     love.graphics.setColor(0, 255, 0, 1)
+    --love.graphics.setColor(255, 0, 0, 1)
+    --state = "ending"
     love.graphics.setDefaultFilter("nearest", "nearest", 0)
     love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true})
     
     titleScreen = love.graphics.newImage("Title Picture.png")
     state = "title"
+    
     isTalking = false
     isUsingItem = false
     numOfTimesPictureChecked = 0
@@ -153,6 +180,13 @@ function love.load()
     
     ancientTowerTop = love.graphics.newImage("Ancient_Tower_Top.png")
     ancientTowerPainting = love.graphics.newImage("Ancient_Tower_Painting.png")
+    ancientTowerPaintingRed = love.graphics.newImage("Ancient_Tower_Painting_Red.png")
+    
+    scaryBGM = love.audio.newSource("scary.wav", "stream")
+    creepyBGM = love.audio.newSource("creepy.wav", "stream")
+    creepy2BGM = love.audio.newSource("creepy2.wav", "stream")
+    redPrinceEye = love.graphics.newImage("Red_Prince_Eye.png")
+    eyes = {}
     
     -- Locations: Ancient Tower, Bedroom, Crystal Cave, Emerald Sea, Forest of Spirits, Forgotten Pit, Lost Hills
     curLocation = "Bedroom"
@@ -188,6 +222,7 @@ function love.load()
     amuletImg = {love.graphics.newImage("Phase_Amulet_1.png"), love.graphics.newImage("Phase_Amulet_2.png")}
     eyeOfTruthImg = {love.graphics.newImage("Eye_of_Truth_1.png"), love.graphics.newImage("Eye_of_Truth_2.png")}
     swordHiltImg = {love.graphics.newImage("Sword_Hilt_1.png"), love.graphics.newImage("Sword_Hilt_2.png")}
+    redPrinceImg = love.graphics.newImage("Red_Prince.png")
     
     -- Game locations and their information
     locations = {
@@ -214,8 +249,8 @@ function love.load()
                                                             {
                                                                 x=0,y=1,des={
                                                                                 "You step through, encountering a large ornate picture hanging on the wall. The antique is",
-                                                                                "covered top to bottom in dust, but is otherwise undamaged. The picture is of a lone dark",
-                                                                                "road with a single star shining in the sky."
+                                                                                "covered top to bottom in dust, but is otherwise undamaged. The picture is of a lone dark road",
+                                                                                "with a single star shining in the sky."
                                                                                 --[["You step through, encountering a large ornate picture hanging on the wall. The antique is",
                                                                                 "covered top to bottom in dust, but is otherwise undamaged. The picture is of the inside of a",
                                                                                 "grand cathedral that has aged wretchedly. Blue candles sit melted in cast bronze holders, and",
@@ -229,7 +264,7 @@ function love.load()
                                                             {
                                                                 x=0,y=2,des={
                                                                                 "You climb a stone staircase and reach an opening at the top of the tower. An altar sits quietly at",
-                                                                                "the surface. Its surface is glossy like obsidian and covered with finely spun cloth. The blade of a",
+                                                                                "the top. Its surface is glossy like obsidian and covered with finely spun cloth. The blade of a",
                                                                                 "sword is embedded into the altar. Eldritch glowing runes adorn the cold steel. A shaft of violet",
                                                                                 "light parts the clouds in the sky and coats the altar in a spectral beauty.",
                                                                             }
@@ -289,13 +324,14 @@ function love.load()
                                                                                     term={text="Red Prince",command="[R]ed Prince",term="Red_Prince"}
                                                                                     },
                                                                     Eye_of_Truth={
-                                                                                    text={"THE EYE OF TRUTH..............IT SEES............THROUGH ILLUSIONS.",
-                                                                                            "IT WAS CRAFTED......THROUGH DIVINE MAGIC.........BY SOOTHSAYER ASTREA.",
+                                                                                    text={"THE EYE OF TRUTH..............IT SEES............THROUGH ILLUSIONS. IT WAS CRAFTED THROUGH",
+                                                                                            "DIVINE MAGIC.........BY SOOTHSAYER ASTREA.",
                                                                                         },
                                                                                     
                                                                                  },
                                                                     Emerald_Sea= {
-                                                                                text={"THE EMERALD SEA...A WOMAN WHOSE FLESH TURNED TO STONE FROM AN ETERNITY OF WAITING."},
+                                                                                text={"THE EMERALD SEA...A WOMAN WHOSE FLESH TURNED TO STONE FROM AN ETERNITY OF",
+                                                                                    "WAITING."},
                                                                             },
                                                                     Lost_Hills= {
                                                                                     text={"DO NOT LOSE YOUR WAY IN THE LOST HILLS, OR YOU WILL NEVER ESCAPE."}
@@ -323,7 +359,7 @@ function love.load()
                                     },
                     Dark_Road = {
                                     rooms = {{x=0,y=0}},
-                                    roomImage = love.graphics.newImage("Emerald_Sea.png"),
+                                    roomImage = love.graphics.newImage("Dark_Road.png"),
                                     searDesc = {},
                                     walkDesc = {},
                                 },
@@ -391,16 +427,23 @@ function love.load()
                                                                                             "near the tar-drenched pit."
                                                                                         },
                                                                                     },
+                                                                    Lost_Hills= {
+                                                                                    text={
+                                                                                            "(You hear a voice in your head)",
+                                                                                            "A series of hills enchanted with magic. Attempting to navigate these unhallowed lands without",
+                                                                                            "foreknowledge is a death sentence."
+                                                                                        }
+                                                                                },
                                                                     Phase_Amulet=   {
-                                                                                        text=   {
-                                                                                                    "(You hear a voice in your head)",
-                                                                                                    "The phase amulet allows one to step through a dimensional gate.",
-                                                                                                    "Do not try to traverse a portal without the amulet..."
-                                                                                                },
+                                                                                    text=   {
+                                                                                                "(You hear a voice in your head)",
+                                                                                                "The phase amulet allows one to step through a dimensional gate. Do not try to traverse the",
+                                                                                                "portal without the amulet..."
+                                                                                            },
                                                                                     },
                                                                     Red_Prince= {
                                                                                     text=   {
-                                                                                                "THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE",
+                                                                                                "THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE,",
                                                                                                 "THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE, THE RED PRINCE",
                                                                                                 "HIS POWER IS VAST! HIS ILLUSIONS ARE STRONG!",
                                                                                                 "HE PUPPETS THE PRINCESS! HE PUPPETS THE PRINCESS!",
@@ -408,12 +451,17 @@ function love.load()
                                                                                                 "Out of the corner of your eye, you think you see a shadow figure momentarily."
                                                                                             }
                                                                                 },
+                                                                    Stone_Statue={
+                                                                                    text=   {   "(You hear a voice in your head)",
+                                                                                                "My body may have frozen in place, but my soul will burn for my husband forever."
+                                                                                            }
+                                                                                },
                                                                     Sword_Hilt= {
-                                                                                    text=   {
-                                                                                                "(You hear a voice in your head)",
-                                                                                                "The astral blade was once whole. Bring the hilt to the altar if you wish to speak to the",
-                                                                                                "being who calls your name. The blade will rejoin when its hilt is close."
-                                                                                            },
+                                                                                    text={
+                                                                                            "(You hear a voice in your head)",
+                                                                                            "The astral blade was once whole. Bring the hilt to the altar if you wish to speak to the being",
+                                                                                            "who calls your name. The blade will rejoin when its hilt is close."
+                                                                                        },
                                                                                 },
                                                                     Voice=  {
                                                                                 text=   {
@@ -456,7 +504,7 @@ function love.load()
                                                         y=2,
                                                         dialogue={
                                                                     default={
-                                                                                text={"I am Cassandra, one of the spirits of the \"Forest\"."},
+                                                                                text={"I am Cassandra, one of the spirits of the [Forest]."},
                                                                                 term={text="Forest",command="[F]orest",term="Forest"}
                                                                             },
                                                                     Abandoned_Tower={
@@ -549,7 +597,7 @@ function love.load()
                                                         },
                                                         {x=0,y=2,des=   {
                                                                             "Something is inscribed into the rock here. It reads:",
-                                                                            "NOT ALL IS WHAT IT APPEARS TO BE. THE RED PRINCES' INFLUENCE STRETCHES FAR AND WIDE.",
+                                                                            "NOT ALL IS WHAT IT APPEARS TO BE. THE RED PRINCE'S INFLUENCE STRETCHES FAR AND WIDE.",
                                                                             "THERE IS NO CORRECT ANSWER TO THE QUESTION. SEEK THE [EYE OF TRUTH]."
                                                                         }
                                                         },
@@ -601,6 +649,7 @@ function love.load()
     scale = {}
     curText = {"","","","","Night of the Crescent Moon Ver " .. gameVersion, "A text adventure by Elias Mote", "Testing done by Dred4170", "Copyright (c) Roc Studios 2019", "Press [enter] to start"}
     timer = 0
+    endingTimer = 0
 end
 
 function love.update(dt)
@@ -621,6 +670,31 @@ function love.draw()
     
     -- scale the window
     love.graphics.scale(scale.x,scale.y)
+    
+    if(ending["state"] == 37) then
+                        
+        
+        local dx = love.math.random(-20, 20)
+        local dy = love.math.random(-20, 20)
+        love.graphics.translate(dx,dy)
+        
+        endingTimer = endingTimer + 1
+        if(endingTimer % 5 == 0) then
+            local e = {}
+            e.x = love.math.random(0, 640)
+            e.y = love.math.random(0, 360)
+            table.insert(eyes, e)
+        end
+        
+        for k,v in ipairs(eyes) do
+            love.graphics.draw(redPrinceEye, v.x,v.y)
+        end
+        
+        if(endingTimer >= 60 * 10) then
+            love.event.quit()
+        end
+        
+    end
     
     -- draw the game or title screen
     if(state == "game" or state == "title") then
@@ -719,8 +793,11 @@ function love.draw()
             
             -- draw the sword hilt if the player has it
             if(items[i]["text"] == "Sword Hilt") then
-                
-                love.graphics.draw(swordHiltImg[1], itemX, 140)
+                if(items[i]["enabled"]) then
+                    love.graphics.draw(swordHiltImg[math.floor(timer/30) % 2 + 1], itemX, 140)
+                else
+                    love.graphics.draw(swordHiltImg[2], itemX, 140)
+                end
             end
         end
         
@@ -735,6 +812,17 @@ function love.draw()
         -- draw blinking cursor
         if(timer % 60 < 60 / 2) then
             love.graphics.rectangle("fill", 30 , 317 , 8 , 12)
+        end
+    elseif(state == "ending") then
+        endingTimer = endingTimer + 1
+        if(endingTimer % 16 <= 16/2) then
+            love.graphics.rectangle("fill", 0, 0, 640, 360)
+        end
+        if(endingTimer >= 10 and endingTimer <= 60*1+10) then
+            love.graphics.draw(redPrinceImg, 640/2, 360/2, 0, (endingTimer-10)/10, (endingTimer-10)/10, 32, 32)
+            
+        elseif(endingTimer > 60*1+10) then
+            love.event.quit()
         end
     end
 end
@@ -1030,31 +1118,42 @@ function love.keypressed(key, scancode, isrepeat)
             
         elseif (isAskingTheQuestion == true and ending["isGameEnding"] == false) then
             if(key == "y") then
+                love.graphics.setColor(255, 0, 0, 1)
+                setItemsToRed()
                 writeToTextDisplay({"The princess takes the ancient sword. Suddenly, a third red eye appears on her forehead.",
                                     "Before you can move, the princess stabs you through the stomach. Blood from the wound",
                                     "begins to pool onto the altar. As your consciousness fades, you hear the faintest sound of",
                                     "contorted laughter alongside pipe organs and a fiendish dirge."})
                 ending["isGameEnding"] = true
                 ending["number"] = 1
+                creepy2BGM:play()
                 
             elseif(key == "n") then
-                writeToTextDisplay({"Hmm...curious. You don't seem to understand", "SINCE WHEN WERE YOU THE ONE IN CONTROL?"})
+                love.graphics.setColor(255, 0, 0, 1)
+                setItemsToRed()
+                writeToTextDisplay({"Hmm...curious. You don't seem to understand.", "SINCE WHEN WERE YOU THE ONE IN CONTROL?"})
                 ending["isGameEnding"] = true
                 ending["number"] = 2
             end
         elseif(ending["isGameEnding"] == true) then
             if(key == "return") then
                 
-                if(ending["number"] <= 2) then
+                if(ending["number"] == 1) then
                     love.event.quit()
+                elseif(ending["number"] == 2) then
+                    state = "ending"
+                    scaryBGM:play()
                 end
                 
                 if(ending["number"] == 3) then
                     if(ending["state"] == 1) then
-                        writeToTextDisplay({"The church dissolves before your eyes. A dark road lies in front of you."})
+                        writeToTextDisplay({"The tower dissolves before your eyes. A dark road lies in front of you."})
                     elseif(ending["state"] == 2) then
                         writeToTextDisplay({"A distant light is the only sight."})
                     elseif(ending["state"] == 3) then
+                        --love.graphics.setColor(255, 0, 0, 1)
+                        setItemsToRed()
+                        creepyBGM:play()
                         writeToTextDisplay({"You feel a strange prescence."})
                     elseif(ending["state"] == 4) then
                         writeToTextDisplay({"\"A razor thin veil between this world and the next.\""})
@@ -1095,6 +1194,8 @@ function love.keypressed(key, scancode, isrepeat)
                     elseif(ending["state"] == 21) then
                         writeToTextDisplay({"[The world crumbles at your feet]"})
                     elseif(ending["state"] == 22) then
+                        creepyBGM:stop()
+                        setItemsToGreen()
                         writeToTextDisplay({"[In a flash of light, you reappear in your bedroom.]"})
                     elseif(ending["state"] == 23) then
                         writeToTextDisplay({"Those people...the woman of stone...the knight of crystal...the spirit of the forest..."})
@@ -1107,6 +1208,8 @@ function love.keypressed(key, scancode, isrepeat)
                     elseif(ending["state"] == 27) then
                         writeToTextDisplay({"..."})
                     elseif(ending["state"] == 28) then
+                        creepyBGM:play()
+                        setItemsToRed()
                         writeToTextDisplay({"WHAT IS YOUR PATH?"})
                     elseif(ending["state"] == 29) then
                         writeToTextDisplay({"WHERE WILL YOU GO?"})
@@ -1123,15 +1226,13 @@ function love.keypressed(key, scancode, isrepeat)
                     elseif(ending["state"] == 35) then
                         writeToTextDisplay({"AND WAITS"})
                     elseif(ending["state"] == 36) then
-                        writeToTextDisplay({"............."})
-                    elseif(ending["state"] == 37) then
-                        writeToTextDisplay({"The end"})
-                    elseif(ending["state"] == 38) then
-                        love.event.quit()
+                        state = "none"
                     end
                 end
                 
-                ending["state"] = ending["state"] + 1
+                if(ending["state"] <= 36) then
+                    ending["state"] = ending["state"] + 1
+                end
             end
         end
     end

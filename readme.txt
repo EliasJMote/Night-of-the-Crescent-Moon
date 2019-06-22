@@ -1,5 +1,5 @@
 ﻿Night of the Crescent Moon
-Version 0.9.4
+Version 1.0.0
 
 Copyright © 2019 Elias Mote
 Copyright © 2019 Roc Studios
@@ -22,7 +22,13 @@ strictly prohibited, and a violation of copyright.
 II. Version History
 
 ------------------------
-V0.9.4 - Current Version
+V1.0.0 - Current Version
+------------------------
+- Completed each ending
+- Fixed a text bug with the Stone Statue key term
+
+------------------------
+V0.9.4
 ------------------------
 - Added images to the Ancient Tower entrance and the Forgotten Pit
 

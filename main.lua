@@ -164,8 +164,6 @@ end
 function love.load()
     
     love.graphics.setColor(0, 255, 0, 1)
-    --love.graphics.setColor(255, 0, 0, 1)
-    --state = "ending"
     love.graphics.setDefaultFilter("nearest", "nearest", 0)
     love.window.setMode(love.graphics.getWidth(), love.graphics.getHeight(), {resizable = true})
     
@@ -647,7 +645,7 @@ function love.load()
                 }
     
     scale = {}
-    curText = {"","","","","Night of the Crescent Moon Ver " .. gameVersion, "A text adventure by Elias Mote", "Testing done by Dred4170", "Copyright (c) Roc Studios 2019", "Press [enter] to start"}
+    curText = {"","","","WARNING: THIS GAMES CONTAINS FLASHING IMAGES AND SOME DISTURBING MOMENTS.","Night of the Crescent Moon Ver " .. gameVersion, "A text adventure by Elias Mote", "Testing done by Dred4170", "Copyright (c) Roc Studios 2019", "Press [enter] to start"}
     timer = 0
     endingTimer = 0
 end

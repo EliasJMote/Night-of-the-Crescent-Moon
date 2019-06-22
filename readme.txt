@@ -1,5 +1,5 @@
 ﻿Night of the Crescent Moon
-Version 0.9.3
+Version 0.9.4
 
 Copyright © 2019 Elias Mote
 Copyright © 2019 Roc Studios
@@ -22,7 +22,12 @@ strictly prohibited, and a violation of copyright.
 II. Version History
 
 ------------------------
-V0.9.3 - Current Version
+V0.9.4 - Current Version
+------------------------
+- Added images to the Ancient Tower entrance and the Forgotten Pit
+
+------------------------
+V0.9.3
 ------------------------
 -- Updated some of the Crystal Knight's dialogue
 -- Added pictures for the Emerald Sea, the Lost Hills, and the Abandoned Tower
